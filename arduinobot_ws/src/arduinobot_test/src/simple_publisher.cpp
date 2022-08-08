@@ -24,7 +24,7 @@ int main(int argc, char **argv)
         std_msgs::String msg;
 
         std::stringstream ss;
-        ss << "Hello world, I'm a Robot! " << counter;
+        ss << "Hello world, I'm a Robot!" << counter;
         msg.data = ss.str();
         pub.publish(msg);
 
