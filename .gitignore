@@ -37,7 +37,8 @@ qtcreator-*
 /planning/src
 
 *~
-
+#CAD files
+*.STL
 # Emacs
 .#*
 
