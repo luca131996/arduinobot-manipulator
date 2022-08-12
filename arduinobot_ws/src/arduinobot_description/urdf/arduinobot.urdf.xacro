@@ -1,10 +1,12 @@
 <?xml version="1.0"?>
-
 <robot  xmlns:xacro="http://ww.ros.org/wiki/xacro" name="arduinobot">
+
 
 	<xacro:property name="PI" value="3.14159"/>
 	<xacro:property name="effort" value="30"/>
 	<xacro:property name="velocity" value="10"/>
+
+
 
 	<link name="world"/>
 
@@ -26,6 +28,54 @@
 		</visual>
 	</link>
 
+	<link name="forward_drive_arm">
+		<visual>
+			<origin rpy="0 -${PI/2} ${PI/2}" xyz="0.19 0.06 -0.08"/>
+			<geometry>
+				<mesh filename="package://arduinobot_description/mesh/forward_drive_arm.STL" scale="0.01 0.01 0.01"/>
+			</geometry>
+		</visual>
+	</link>
+
+	<link name="horizontal_arm">
+		<visual>
+			<origin rpy="${PI/2} 0 ${PI/2}" xyz="-0.03 -0.4 -0.06"/>
+			<geometry>
+				<mesh filename="package://arduinobot_description/mesh/horizontal_arm.STL" scale="0.01 0.01 0.01"/>
+			</geometry>
+		</visual>
+	</link>
+
+	<link name="claw_support">
+		<visual>
+			<origin rpy="0 0 ${PI/2}" xyz="0 -0.05 -0.15"/>
+			<geometry>
+				<mesh filename="package://arduinobot_description/mesh/claw_support.STL" scale="0.01 0.01 0.01"/>
+			</geometry>
+		</visual>
+	</link>
+
+	<link name="gripper_right">
+		<visual>
+			<origin rpy="0 0 -${PI/2}" xyz="-0.1 0.5 -0.1"/>
+			<geometry>
+				<mesh filename="package://arduinobot_description/mesh/right_finger.STL" scale="0.01 0.01 0.01"/>
+			</geometry>
+		</visual>
+	</link>
+
+	<link name="gripper_left">
+		<visual>
+			<origin rpy="0 0 -${PI/2}" xyz="-0.04 0.5 -0.1"/>
+			<geometry>
+				<mesh filename="package://arduinobot_description/mesh/left_finger.STL" scale="0.01 0.01 0.01"/>
+			</geometry>
+		</visual>
+	</link>
+
+	<link name="tool_link"/>
+
+
 
 	<joint name="virtual_joint" type="fixed">
 		<parent link="world"/>
@@ -40,5 +90,50 @@
 		<axis xyz="0 0 1"/>
 		<limit upper="${PI/2}" lower="-${PI/2}" effort="${effort}" velocity="${velocity}"/>
 	</joint>
+
+	<joint name="joint_2" type="revolute">
+		<parent link="base_plate"/>
+		<child link="forward_drive_arm"/>
+		<origin rpy="0 0 0" xyz="-0.02 0 0.35"/>	
+		<axis xyz="1 0 0"/>
+		<limit upper="${PI/2}" lower="-${PI/2}" effort="${effort}" velocity="${velocity}"/>
+	</joint>
+
+	<joint name="joint_3" type="revolute">
+		<parent link="forward_drive_arm"/>
+		<child link="horizontal_arm"/>
+		<origin rpy="0 0 0" xyz="0 0 0.8"/>	
+		<axis xyz="1 0 0"/>
+		<limit upper="${PI/2}" lower="-${PI/2}" effort="${effort}" velocity="${velocity}"/>
+	</joint>
+
+	<joint name="horizontal_arm_to_claw_support" type="fixed">
+		<parent link="horizontal_arm"/>
+		<child link="claw_support"/>
+		<origin rpy="0 0 0" xyz="0 0.82 0"/>	
+	</joint>
+
+	<joint name="joint_4" type="revolute">
+		<parent link="claw_support"/>
+		<child link="gripper_right"/>
+		<origin rpy="0 0 0" xyz="-0.04 0.13 -0.1"/>	
+		<axis xyz="0 0 1"/>
+		<limit upper="0" lower="-${PI/2}" effort="${effort}" velocity="${velocity}"/>
+	</joint>
+
+	<joint name="joint_5" type="revolute">
+		<parent link="claw_support"/>
+		<child link="gripper_left"/>
+		<origin rpy="0 0 0" xyz="-0.22 0.13 -0.1"/>
+		<axis xyz="0 0 1"/>
+		<limit upper="${PI/2}" lower="0" effort="${effort}" velocity="${velocity}"/>
+		<mimic joint="joint_4" offset="0" multiplier = "-1"/>
+	</joint>
+
+	<joint name="gripper_right_to_tool_link" type="fixed">
+		<parent link="gripper_right"/>
+		<child link="tool_link"/>
+		<origin rpy="0 0 0" xyz="0 0 0"/>
+		</joint>
 
 </robot>
